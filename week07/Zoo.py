@@ -3,96 +3,55 @@ import sys
 
 class Zoo(object):
 
+    animals = {}
+
     def __init__(self, name):
         # 动物园名字
         self.name = name
 
-    def __getattr__(self, item):
-        if sys._getframe().f_back.f_lineno < 37 :
-            print(f'__getattr__ called item:{item}')
-            setattr(self,item,[])
-            return item
-
-    def add_animal(self, animal):
-        if animal.__class__.__name__ == 'Cat':
-            flag = 0
-            for i in self.Cat:
-                if id(i) == id(animal) :
-                    flag = 1
-
-            if flag != 1 :
-                self.Cat.append(animal)
-            
-        
-        if animal.__class__.__name__ == 'Dog':
-            print('Dog')
-            flag = 0
-            for i in self.Dog:
-                if id(i) == id(animal) :
-                    flag = 1
-
-            if flag != 1 :
-                self.Dog.append(animal)
+    @classmethod
+    def add_animal(cls, animal):
+        if animal not in cls.animals:
+            cls.animals[animal] = animal
+    
+        if not hasattr(cls, animal.__class__.__name__):
+            setattr(cls, animal.__class__.__name__, animal)
 
 
 
 class Animal(metaclass=ABCMeta):
-    genre = ''
-    physique = ''
-    character = ''
-    fierce_creatures =''
 
     @abstractclassmethod
+    def __init__(self, genre, physique, character):
+        self.genre = genre
+        self.physique = physique
+        self.character = character
+
+    @property
     def is_fierce_creatures(self):
-        pass
+        return (self.physique == '中型' or self.physique == '大型') and self.genre == '食肉' and self.character == '凶猛'
+
+    @property
+    def as_pets(self):
+        return (self.physique != '凶猛') 
 
 class Cat(Animal):
+
+    sound = '喵'
     
     def __init__(self, name,genre,physique,character):
         # 动物名字
         self.name = name
-        self.genre = genre
-        self.physique = physique
-        self.character = character
-        self.sound = '喵'
-
-        if self.physique == '凶猛' :
-            self.forpet = '不适合'
-        else :
-            self.forpet = '适合'
-
-        self.is_fierce_creatures()
-
-
-    def is_fierce_creatures(self):
-        if self.physique == '肉食' or self.character == '凶猛' :
-            self.fierce_creatures = '是'
-        else :
-            self.fierce_creatures = '否'
+        super().__init__(genre, physique, character)
 
 class Dog(Animal):
+
+    sound = 'WoWo'
 
     def __init__(self, name,genre,physique,character):
         # 动物名字
         self.name = name
-        self.genre = genre
-        self.physique = physique
-        self.character = character
-        self.sound = 'wowo'
-
-        if self.physique == '凶猛' :
-            self.forpet = '不适合'
-        else :
-            self.forpet = '适合'
-
-        self.is_fierce_creatures()
-
-
-    def is_fierce_creatures(self):
-        if self.physique == '肉食' or self.character == '凶猛' :
-            self.fierce_creatures = '是'
-        else :
-            self.fierce_creatures = '否'
+        super().__init__(genre, physique, character)
 
     
 
